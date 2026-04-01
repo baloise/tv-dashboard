@@ -135,20 +135,32 @@ async function initCDP() {
     const tabs = await resp.json();
     log("Found " + tabs.length + " tab(s)");
 
-    // Find our controller tab
+    // Find our controller tab (this page)
     const dashTab = tabs.find(t => t.url.includes("dashboard"));
     if (dashTab) dashboardTabId = dashTab.id;
 
-    // Create a new display tab
-    const newTab = await (await fetch(CDP_URL + "/json/new?about:blank")).json();
-    displayTabId = newTab.id;
-    log("Created display tab: " + displayTabId);
+    // Find or create a display tab (any tab that isn't the dashboard)
+    let displayTab = tabs.find(t => !t.url.includes("dashboard") && t.type === "page");
+
+    if (!displayTab) {
+      // Try PUT method (Edge) then GET (Chrome) for creating new tab
+      let newResp = await fetch(CDP_URL + "/json/new?about:blank", { method: "PUT" });
+      if (!newResp.ok) {
+        newResp = await fetch(CDP_URL + "/json/new?about:blank");
+      }
+      displayTab = await newResp.json();
+      log("Created display tab: " + displayTab.id);
+    } else {
+      log("Reusing existing tab: " + displayTab.id);
+    }
+
+    displayTabId = displayTab.id;
 
     // Connect WebSocket to display tab
-    await connectDisplayTab(newTab.webSocketDebuggerUrl);
+    await connectDisplayTab(displayTab.webSocketDebuggerUrl);
 
     // Activate display tab (bring to foreground)
-    await fetch(CDP_URL + "/json/activate/" + displayTabId);
+    await fetch(CDP_URL + "/json/activate/" + displayTabId).catch(() => {});
 
     setStatus("Connected. Display tab active.", false);
 
