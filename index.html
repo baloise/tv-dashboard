@@ -303,14 +303,25 @@ setInterval(function() {
 }, CONFIG_POLL_SECONDS * 1000);
 
 // Re-check schedule every minute
+var lastOverrideActive = false;
 setInterval(function() {
   if (running && !coffeeActive) {
     var override = getActiveScheduledUrl();
     if (override) {
+      lastOverrideActive = true;
       var cur = document.getElementById("currentUrl").textContent;
       if (cur !== override) {
         nav(override);
         log("Schedule override activated");
+      }
+    } else if (lastOverrideActive) {
+      // Schedule just ended — switch back to normal rotation
+      lastOverrideActive = false;
+      var urls = getUrls();
+      if (urls.length) {
+        nav(urls[currentIdx], true);
+        log("Schedule ended, resuming rotation");
+        resetCountdown();
       }
     }
   }
