@@ -159,7 +159,7 @@ async function initCDP() {
 
   } catch (e) {
     log("CDP init failed: " + e.message);
-    setStatus("CDP connection failed. Is Chrome running with --remote-debugging-port=9222?", true);
+    setStatus("CDP connection failed. Is the browser running with --remote-debugging-port=9222?", true);
 
     // Retry after 5 seconds
     setTimeout(initCDP, 5000);
