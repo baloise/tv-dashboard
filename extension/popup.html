@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 320px; font-family: 'Segoe UI', sans-serif;
+    background: #1a1a2e; color: #eee; padding: 16px;
+  }
+  h2 { font-size: 16px; color: #6c63ff; margin-bottom: 12px; }
+  .status { font-size: 12px; color: #888; margin-bottom: 8px; }
+  .status b { color: #ccc; }
+  .url {
+    font-size: 11px; color: #4caf50; word-break: break-all;
+    background: #111; padding: 6px 8px; border-radius: 4px;
+    margin-bottom: 12px; max-height: 60px; overflow-y: auto;
+  }
+  .url.coffee { color: #ff9800; }
+  .buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+  button {
+    flex: 1; min-width: 70px; padding: 8px 4px;
+    border: none; border-radius: 6px; cursor: pointer;
+    font-size: 12px; font-weight: 600;
+    background: #2a2a4a; color: #ccc;
+    transition: background 0.15s;
+  }
+  button:hover { background: #3a3a6a; }
+  button.coffee-btn { background: #5d4037; color: #d7ccc8; }
+  button.coffee-btn:hover { background: #795548; }
+  button.coffee-btn.active { background: #ff9800; color: #1a1a2e; }
+  .sep { height: 1px; background: #333; margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<h2>TV Dashboard</h2>
+<div class="status" id="info">Loading...</div>
+<div class="url" id="url">-</div>
+<div class="buttons">
+  <button id="prevBtn" title="Previous page">&#9664; Prev</button>
+  <button id="nextBtn" title="Next page">Next &#9654;</button>
+  <button id="coffeeBtn" class="coffee-btn" title="Toggle coffee break">&#9749; Coffee</button>
+</div>
+<div class="sep"></div>
+<div class="buttons">
+  <button id="refreshBtn" title="Re-fetch config from Gist">Refresh Config</button>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
