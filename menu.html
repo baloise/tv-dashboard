@@ -71,10 +71,12 @@
   }
   .product-price {
     font-size: 1em;
-    color: #4caf50;
     margin-top: 4px;
     font-weight: 600;
   }
+  .price-int { color: #4caf50; }
+  .price-sep { color: #555; }
+  .price-ext { color: #ff9800; }
   .product-origin {
     font-size: 0.85em;
     color: #666;
@@ -230,16 +232,18 @@ function renderMenu(categories) {
       var teaser = getFieldValue(prod.Teaser);
       var desc = getFieldValue(prod.Description);
 
-      // Get price
-      var priceStr = "";
+      // Get prices (INT = internal, EXT = external)
+      var intPrice = "", extPrice = "";
       if (prod.Prices && prod.Prices.arrayValue && prod.Prices.arrayValue.values) {
         var prices = prod.Prices.arrayValue.values;
         for (var k = 0; k < prices.length; k++) {
           var p = prices[k].mapValue.fields;
-          var label = getFieldValue(p.Label);
+          var tag = getFieldValue(p.Tag) || getFieldValue(p.Label);
           var amount = getFieldValue(p.Price) || 0;
-          if (label === "EXT" && amount > 0) {
-            priceStr = "CHF " + parseFloat(amount).toFixed(2);
+          if (amount > 0) {
+            var formatted = "CHF " + parseFloat(amount).toFixed(2);
+            if (tag === "INT") intPrice = formatted;
+            if (tag === "EXT") extPrice = formatted;
           }
         }
       }
@@ -247,7 +251,13 @@ function renderMenu(categories) {
       html += '<div class="product">';
       html += '<div class="product-name">' + escapeHtml(name) + '</div>';
       if (teaser) html += '<div class="product-desc">' + escapeHtml(teaser) + '</div>';
-      if (priceStr) html += '<div class="product-price">' + priceStr + '</div>';
+      if (intPrice || extPrice) {
+        html += '<div class="product-price">';
+        if (intPrice) html += '<span class="price-int">Intern: ' + intPrice + '</span>';
+        if (intPrice && extPrice) html += '<span class="price-sep"> | </span>';
+        if (extPrice) html += '<span class="price-ext">Extern: ' + extPrice + '</span>';
+        html += '</div>';
+      }
       if (desc) html += '<div class="product-origin">' + escapeHtml(desc) + '</div>';
       html += '</div>';
     }
