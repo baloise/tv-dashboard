@@ -129,7 +129,7 @@ function nav(url, forceReload) {
   // Skip if same URL and not forced
   if (url === document.getElementById("currentUrl").textContent && !forceReload) return;
   try {
-    displayWin = window.open(url, WINDOW_NAME);
+    displayWin = window.open(url, WINDOW_NAME, "width=" + screen.width + ",height=" + screen.height + ",left=0,top=0");
     if (displayWin) {
       displayWin.focus();
       document.getElementById("winStatus").textContent = "Open";
