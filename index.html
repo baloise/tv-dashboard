@@ -83,6 +83,7 @@ let coffeeActive = false;
 let countdownId = null;
 let secsLeft = 0;
 let coffeeTimeout = null;
+let nextRotateAt = 0;
 
 function log(msg) {
   console.log(msg);
@@ -173,12 +174,12 @@ function rotateNext() {
 }
 
 function resetCountdown() {
-  secsLeft = getInterval();
+  nextRotateAt = Date.now() + getInterval() * 1000;
   if (countdownId) clearInterval(countdownId);
   countdownId = setInterval(function() {
-    secsLeft--;
+    secsLeft = Math.max(0, Math.ceil((nextRotateAt - Date.now()) / 1000));
     document.getElementById("countdown").textContent = secsLeft;
-    if (secsLeft <= 0) rotateNext();
+    if (Date.now() >= nextRotateAt) rotateNext();
   }, 1000);
 }
 
