@@ -3,6 +3,12 @@ const { Command } = require('commander');
 const path = require('path');
 const fs = require('fs');
 
+const PROXY = process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROXY || process.env.http_proxy;
+if (PROXY) {
+  const { setGlobalDispatcher, ProxyAgent } = require('undici');
+  setGlobalDispatcher(new ProxyAgent(PROXY));
+}
+
 const cfgPath = path.join(__dirname, 'config.json');
 const fileCfg = fs.existsSync(cfgPath) ? JSON.parse(fs.readFileSync(cfgPath, 'utf8')) : {};
 

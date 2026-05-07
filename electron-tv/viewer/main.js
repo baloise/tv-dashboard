@@ -3,6 +3,13 @@ const WebSocket = require('ws');
 const path = require('path');
 const fs = require('fs');
 
+const PROXY = process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROXY || process.env.http_proxy || null;
+let proxyAgent = null;
+if (PROXY) {
+  const { HttpsProxyAgent } = require('https-proxy-agent');
+  proxyAgent = new HttpsProxyAgent(PROXY);
+}
+
 const cfgPath = path.join(__dirname, 'config.json');
 const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
 
@@ -153,7 +160,8 @@ function applyServerMessage(msg) {
 
 function connectBridge() {
   const url = `${BRIDGE_URL}/?token=${encodeURIComponent(TOKEN)}`;
-  ws = new WebSocket(url);
+  ws = new WebSocket(url, proxyAgent ? { agent: proxyAgent } : undefined);
+  if (PROXY) console.log('[bridge] using proxy', PROXY);
   ws.on('open', () => {
     console.log('[bridge] connected');
     reconnectMs = 1000;

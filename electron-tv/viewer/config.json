@@ -1,6 +1,6 @@
 {
-  "bridgeWss": "wss://CHANGEME.fly.dev",
-  "token": "CHANGEME",
+  "bridgeWss": "wss://tv-dashboard-xo1a.onrender.com",
+  "token": "d8ee565753eb97966aae5f82bd2c0e59183e9e61e58f27752f7784079fb3d9ef",
   "defaultUrl": "https://confluence.baloisenet.com/spaces/AC/pages/3665113558/Depot+Extractor+Metrics+Dashboard+Prod",
   "kiosk": false,
   "fullscreen": false
