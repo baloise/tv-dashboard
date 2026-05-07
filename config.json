@@ -13,6 +13,6 @@
     }
   ],
   "coffeeBreakMinutes": 30,
-  "coffeeBreak": false,
+  "coffeeBreak": true,
   "forceUrl": null
 }
