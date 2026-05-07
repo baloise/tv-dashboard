@@ -33,6 +33,7 @@ let lastLoadedUrl = null;
 
 app.commandLine.appendSwitch('auth-server-allowlist', '*.baloisenet.com');
 app.commandLine.appendSwitch('auth-negotiate-delegate-allowlist', '*.baloisenet.com');
+app.commandLine.appendSwitch('ignore-certificate-errors');
 
 app.whenReady().then(() => {
   mainWindow = new BrowserWindow({
@@ -87,10 +88,16 @@ function render() {
     return;
   }
   const urls = state.config.urls || [];
-  if (!urls.length) return;
-  if (currentIdx >= urls.length) currentIdx = 0;
-  loadUrl(urls[currentIdx]);
-  startRotation();
+  if (urls.length) {
+    if (currentIdx >= urls.length) currentIdx = 0;
+    loadUrl(urls[currentIdx]);
+    startRotation();
+    return;
+  }
+  if (cfg.defaultUrl) {
+    loadUrl(cfg.defaultUrl);
+    stopRotation();
+  }
 }
 
 function startRotation() {

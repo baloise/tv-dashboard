@@ -7,9 +7,9 @@
   "schedule": [
     {
       "url": "https://lendrit20.github.io/tv-dashboard/menu.html",
-      "startTime": "11:15",
-      "endTime": "11:45"
+      "startTime": "11:00",
+      "endTime": "12:00"
     }
   ],
-  "coffeeBreakMinutes": 15
+  "coffeeBreakMinutes": 30
 }

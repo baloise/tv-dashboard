@@ -9,7 +9,8 @@
     "build": "pkg tv.js --targets node20-win-x64 --output dist/tv.exe"
   },
   "dependencies": {
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "undici": "^6.21.0"
   },
   "devDependencies": {
     "@yao-pkg/pkg": "^5.16.1"
