@@ -89,6 +89,33 @@ program
   });
 
 program
+  .command('show <name>')
+  .description('Force display of a named preset (menu, depot, overview, ...)')
+  .action((name) => {
+    const presets = fileCfg.presets || {};
+    const url = presets[name];
+    if (!url) {
+      console.error(`Unknown preset '${name}'. Available: ${Object.keys(presets).join(', ') || '(none)'}`);
+      process.exit(1);
+    }
+    send('force_url', { url });
+  });
+
+program
+  .command('presets')
+  .description('List available preset names')
+  .action(() => {
+    const presets = fileCfg.presets || {};
+    if (!Object.keys(presets).length) {
+      console.log('(no presets configured in cli/config.json)');
+      return;
+    }
+    for (const [name, url] of Object.entries(presets)) {
+      console.log(`  ${name.padEnd(12)} ${url}`);
+    }
+  });
+
+program
   .command('status')
   .description('Show current bridge state')
   .action(status);

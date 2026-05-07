@@ -1,4 +1,9 @@
 {
   "bridgeUrl": "https://tv-dashboard-xo1a.onrender.com",
-  "token": "d8ee565753eb97966aae5f82bd2c0e59183e9e61e58f27752f7784079fb3d9ef"
+  "token": "d8ee565753eb97966aae5f82bd2c0e59183e9e61e58f27752f7784079fb3d9ef",
+  "presets": {
+    "menu":     "https://lendrit20.github.io/tv-dashboard/menu.html",
+    "depot":    "https://confluence.baloisenet.com/spaces/AC/pages/3665113558/Depot+Extractor+Metrics+Dashboard+Prod#zoomOnLoad=true&auto-reload=97",
+    "overview": "https://confluence.baloisenet.com/x/aYuE1Q#zoomOnLoad=true&auto-reload=97"
+  }
 }
