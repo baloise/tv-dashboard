@@ -1,0 +1,7 @@
+{
+  "bridgeWss": "wss://CHANGEME.fly.dev",
+  "token": "CHANGEME",
+  "defaultUrl": "https://confluence.baloisenet.com/spaces/AC/pages/3665113558/Depot+Extractor+Metrics+Dashboard+Prod",
+  "kiosk": false,
+  "fullscreen": false
+}

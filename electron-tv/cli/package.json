@@ -1,0 +1,23 @@
+{
+  "name": "tv-cli",
+  "version": "1.0.0",
+  "private": true,
+  "bin": { "tv": "./tv.js" },
+  "main": "tv.js",
+  "scripts": {
+    "start": "node tv.js",
+    "build": "pkg tv.js --targets node20-win-x64 --output dist/tv.exe"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@yao-pkg/pkg": "^5.16.1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "pkg": {
+    "assets": ["templates/**/*", "config.json"]
+  }
+}

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: tv-bridge
+    runtime: docker
+    rootDir: electron-tv/bridge
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt
+    healthCheckPath: /health
+    envVars:
+      - key: SHARED_TOKEN
+        sync: false

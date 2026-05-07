@@ -1,0 +1,30 @@
+{
+  "name": "tv-viewer",
+  "version": "1.0.0",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^32.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "build": {
+    "appId": "com.baloise.tv-viewer",
+    "productName": "TV Viewer",
+    "win": {
+      "target": "nsis"
+    },
+    "files": [
+      "main.js",
+      "config.json",
+      "coffee.html",
+      "package.json"
+    ]
+  }
+}
