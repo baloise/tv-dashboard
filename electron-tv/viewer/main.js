@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, session } = require('electron');
 const WebSocket = require('ws');
 const path = require('path');
 const fs = require('fs');
@@ -34,10 +34,20 @@ let lastLoadedUrl = null;
 app.commandLine.appendSwitch('auth-server-allowlist', '*.baloisenet.com');
 app.commandLine.appendSwitch('auth-negotiate-delegate-allowlist', '*.baloisenet.com');
 app.commandLine.appendSwitch('ignore-certificate-errors');
-app.commandLine.appendSwitch('proxy-bypass-list',
-  '*.baloise.com;*.baloisenet.com;*.balgroupit.com;*.bvch.ch;*.baloise.ch;*.baloise.app;localhost;127.0.0.1');
+const PROXY_BYPASS = '*.baloise.com,*.baloisenet.com,*.balgroupit.com,*.bvch.ch,*.baloise.ch,*.baloise.app,localhost,127.0.0.1';
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  if (PROXY) {
+    const proxyHost = PROXY.replace(/^https?:\/\//, '');
+    await session.defaultSession.setProxy({
+      proxyRules: `http=${proxyHost};https=${proxyHost}`,
+      proxyBypassRules: PROXY_BYPASS,
+    });
+    console.log('[chromium] proxy configured', proxyHost, 'bypass:', PROXY_BYPASS);
+  } else {
+    await session.defaultSession.setProxy({ proxyRules: 'direct://' });
+  }
+
   mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
