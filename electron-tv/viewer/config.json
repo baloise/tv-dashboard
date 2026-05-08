@@ -1,7 +1,7 @@
 {
   "bridgeWss": "wss://tv-dashboard-xo1a.onrender.com",
   "token": "d8ee565753eb97966aae5f82bd2c0e59183e9e61e58f27752f7784079fb3d9ef",
-  "defaultUrl": "https://confluence.baloisenet.com/spaces/AC/pages/3665113558/Depot+Extractor+Metrics+Dashboard+Prod",
+  "defaultUrl": "https://confluence.baloisenet.com/spaces/AC/pages/3665113558/Depot+Extractor+Metrics+Dashboard+Prod#zoomOnLoad=true&auto-reload=97",
   "kiosk": false,
   "fullscreen": true
 }

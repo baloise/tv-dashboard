@@ -1,26 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Coffee Break</title>
-<style>
-  html, body { margin: 0; padding: 0; height: 100%; }
-  body {
-    background: linear-gradient(135deg, #2d1810 0%, #5d2e0e 100%);
-    color: #f5deb3;
-    font-family: 'Segoe UI', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  h1 { font-size: 6rem; margin: 0 0 1rem; letter-spacing: 0.05em; }
-  p  { font-size: 2rem; opacity: 0.85; }
-</style>
-</head>
-<body>
-  <h1>Coffee Break</h1>
-  <p>Back in a few.</p>
+<html>
+<head><meta charset="UTF-8"><title>Coffee Break</title></head>
+<body style="display:flex;justify-content:center;align-items:center;height:100vh;
+  background:linear-gradient(135deg,#3e2723,#4e342e,#5d4037);color:#fff;
+  font-family:'Segoe UI',sans-serif;flex-direction:column;margin:0;overflow:hidden">
+  <div style="font-size:min(40vw,40vh);animation:wobble 2s ease-in-out infinite">&#9749;</div>
+  <div style="font-size:min(6vw,6vh);margin-top:20px;font-weight:300;letter-spacing:4px">COFFEE BREAK</div>
+  <div style="font-size:min(2.5vw,2.5vh);color:#8d6e63;margin-top:15px">Dashboard resumes shortly...</div>
+  <style>@keyframes wobble{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}</style>
 </body>
 </html>
