@@ -37,7 +37,10 @@ app.commandLine.appendSwitch('ignore-certificate-errors');
 const PROXY_BYPASS = '*.baloise.com,*.baloisenet.com,*.balgroupit.com,*.bvch.ch,*.baloise.ch,*.baloise.app,localhost,127.0.0.1';
 
 app.whenReady().then(async () => {
-  if (PROXY) {
+  if (process.platform === 'win32') {
+    await session.defaultSession.setProxy({ mode: 'system' });
+    console.log('[chromium] using Windows system proxy (PAC)');
+  } else if (PROXY) {
     const proxyHost = PROXY.replace(/^https?:\/\//, '');
     await session.defaultSession.setProxy({
       proxyRules: `http=${proxyHost};https=${proxyHost}`,
