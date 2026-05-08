@@ -34,6 +34,8 @@ let lastLoadedUrl = null;
 app.commandLine.appendSwitch('auth-server-allowlist', '*.baloisenet.com');
 app.commandLine.appendSwitch('auth-negotiate-delegate-allowlist', '*.baloisenet.com');
 app.commandLine.appendSwitch('ignore-certificate-errors');
+app.commandLine.appendSwitch('proxy-bypass-list',
+  '*.baloise.com;*.baloisenet.com;*.balgroupit.com;*.bvch.ch;*.baloise.ch;*.baloise.app;localhost;127.0.0.1');
 
 app.whenReady().then(() => {
   mainWindow = new BrowserWindow({
