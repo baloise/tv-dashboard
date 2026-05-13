@@ -7,7 +7,7 @@
   "rotationIntervalSeconds": 300,
   "schedule": [
     {
-      "url": "https://lendrit20.github.io/tv-dashboard/menu.html",
+      "url": "https://baloise.github.io/tv-dashboard/menu.html",
       "startTime": "11:00",
       "endTime": "12:00"
     }
