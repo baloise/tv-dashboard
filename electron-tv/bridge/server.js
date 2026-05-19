@@ -1,5 +1,7 @@
 const express = require('express');
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const { WebSocketServer } = require('ws');
 
 const COMMAND_TYPES = Object.freeze({
@@ -34,8 +36,14 @@ if (!TOKEN) {
   process.exit(1);
 }
 
+const DEFAULT_CONFIG_PATH = path.join(__dirname, 'default-config.json');
+const FALLBACK_CONFIG = { urls: [], rotationIntervalSeconds: 300, schedule: [], coffeeBreakMinutes: 15 };
+const initialConfig = fs.existsSync(DEFAULT_CONFIG_PATH)
+  ? { ...FALLBACK_CONFIG, ...JSON.parse(fs.readFileSync(DEFAULT_CONFIG_PATH, 'utf8')) }
+  : FALLBACK_CONFIG;
+
 const state = {
-  config: { urls: [], rotationIntervalSeconds: 300, schedule: [], coffeeBreakMinutes: 15 },
+  config: initialConfig,
   forceUrl: null,
   coffeeBreak: false,
   lastUpdated: Date.now(),
