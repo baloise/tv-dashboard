@@ -70,19 +70,38 @@ async function pushDefaultConfig() {
   console.log('');
 
   console.log('Done.\n');
-  if (linked && tvAvailable()) {
-    console.log('Use the `tv` command from anywhere, e.g.:');
-    console.log('  tv status');
-    console.log('  tv skip');
-    console.log('  tv show menu');
-    console.log('  tv coffee on');
+
+  const useGlobal = linked && tvAvailable();
+  const commands = [
+    ['status',        'tv status',          'npm run status',     'show what the TV is currently displaying'],
+    ['skip',          'tv skip',            'npm run skip',       'advance to the next URL in the rotation'],
+    ['reload',        'tv reload',          'npm run reload',     'reload the currently-displayed page'],
+    ['menu',          'tv show menu',       'npm run menu',       'show the team menu page'],
+    ['depot',         'tv show depot',      'npm run depot',      'show the depot extractor dashboard'],
+    ['overview',      'tv show overview',   'npm run overview',   'show the overview page'],
+    ['coffee on',     'tv coffee on',       'npm run coffee:on',  'start coffee break (timer page)'],
+    ['coffee off',    'tv coffee off',      'npm run coffee:off', 'end coffee break, resume rotation'],
+    ['force <url>',   'tv force <url>',     '—',                  'pin a custom URL (overrides rotation)'],
+    ['unforce',       'tv unforce',         'npm run unforce',    'clear pinned URL, resume rotation'],
+    ['presets',       'tv presets',         'npm run presets',    'list preset names (menu, depot, overview, ...)'],
+    ['sync',          'tv sync',            'npm run sync',       're-push cli/default-config.json to the bridge'],
+  ];
+
+  if (useGlobal) {
+    console.log('You can run these from any directory:\n');
   } else {
-    console.log('`tv` is not on PATH. Use the npm-script aliases from this directory:');
-    console.log('  npm run status');
-    console.log('  npm run skip');
-    console.log('  npm run menu');
-    console.log('  npm run coffee:on');
+    console.log('`tv` is not on PATH. Use these npm-script aliases from this directory:\n');
   }
+
+  const cmdCol = useGlobal ? 1 : 2;
+  const width = Math.max(...commands.map(r => r[cmdCol].length));
+  for (const row of commands) {
+    const cmd = row[cmdCol];
+    if (cmd === '—') continue;
+    console.log('  ' + cmd.padEnd(width + 2) + row[3]);
+  }
+
   console.log('');
-  console.log('To change what rotates on the TV, edit cli/default-config.json and run `npm run sync`.');
+  console.log('To change what rotates on the TV, edit cli/default-config.json and run `' +
+    (useGlobal ? 'tv sync' : 'npm run sync') + '`.');
 })();
