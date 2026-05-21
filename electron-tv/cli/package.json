@@ -1,11 +1,23 @@
 {
   "name": "tv-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "bin": { "tv": "./tv.js" },
   "main": "tv.js",
   "scripts": {
-    "start": "node tv.js",
+    "start": "node setup.js",
+    "setup": "node setup.js",
+    "status": "node tv.js status",
+    "sync": "node tv.js sync",
+    "skip": "node tv.js skip",
+    "reload": "node tv.js reload",
+    "unforce": "node tv.js unforce",
+    "presets": "node tv.js presets",
+    "menu": "node tv.js show menu",
+    "depot": "node tv.js show depot",
+    "overview": "node tv.js show overview",
+    "coffee:on": "node tv.js coffee on",
+    "coffee:off": "node tv.js coffee off",
     "build": "pkg tv.js --targets node20-win-x64 --output dist/tv.exe"
   },
   "dependencies": {
@@ -19,6 +31,6 @@
     "node": ">=20"
   },
   "pkg": {
-    "assets": ["templates/**/*", "config.json"]
+    "assets": ["default-config.json", "config.json"]
   }
 }
