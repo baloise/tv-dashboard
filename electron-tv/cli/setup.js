@@ -78,7 +78,7 @@ async function pushDefaultConfig() {
     ['reload',        'tv reload',          'npm run reload',     'reload the currently-displayed page'],
     ['menu',          'tv show menu',          'npm run menu',         'show the canteen menu'],
     ['depot',         'tv show depot',         'npm run depot',        'show the depot extractor dashboard'],
-    ['mf-concierge',  'tv show mf-Concierge',  'npm run mf-concierge', 'show the mf-concierge overview page'],
+    ['mf-concierge',  'tv show mf-concierge',  'npm run mf-concierge', 'show the mf-concierge overview page'],
     ['coffee on',     'tv coffee on',       'npm run coffee:on',  'start coffee break (timer page)'],
     ['coffee off',    'tv coffee off',      'npm run coffee:off', 'end coffee break, resume rotation'],
     ['force <url>',   'tv force <url>',     '—',                  'pin a custom URL (overrides rotation)'],
