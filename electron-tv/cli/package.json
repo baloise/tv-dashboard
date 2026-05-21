@@ -15,7 +15,7 @@
     "presets": "node tv.js presets",
     "menu": "node tv.js show menu",
     "depot": "node tv.js show depot",
-    "overview": "node tv.js show overview",
+    "mf-concierge": "node tv.js show MF-Concierge",
     "coffee:on": "node tv.js coffee on",
     "coffee:off": "node tv.js coffee off",
     "build": "pkg tv.js --targets node20-win-x64 --output dist/tv.exe"

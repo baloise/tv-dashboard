@@ -23,9 +23,9 @@ If `npm link` fails on your machine (permissions, etc.), the npm-script aliases 
 | See what the TV is showing    | `tv status`             | `npm run status`        |
 | Skip to next URL              | `tv skip`               | `npm run skip`          |
 | Reload current page           | `tv reload`             | `npm run reload`        |
-| Show the menu page            | `tv show menu`          | `npm run menu`          |
+| Show the canteen menu         | `tv show menu`          | `npm run menu`          |
 | Show depot dashboard          | `tv show depot`         | `npm run depot`         |
-| Show overview                 | `tv show overview`      | `npm run overview`      |
+| Show MF-Concierge overview    | `tv show MF-Concierge`  | `npm run mf-concierge`  |
 | Start coffee break            | `tv coffee on`          | `npm run coffee:on`     |
 | End coffee break              | `tv coffee off`         | `npm run coffee:off`    |
 | Pin a custom URL              | `tv force <url>`        | —                       |

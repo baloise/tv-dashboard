@@ -4,6 +4,6 @@
   "presets": {
     "menu":     "https://baloise.github.io/tv-dashboard/menu.html",
     "depot":    "https://confluence.baloisenet.com/spaces/AC/pages/3665113558/Depot+Extractor+Metrics+Dashboard+Prod#zoomOnLoad=true&auto-reload=97",
-    "overview": "https://confluence.baloisenet.com/x/aYuE1Q#zoomOnLoad=true&auto-reload=97"
+    "mf-concierge": "https://confluence.baloisenet.com/x/aYuE1Q#zoomOnLoad=true&auto-reload=97"
   }
 }
