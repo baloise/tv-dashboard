@@ -38,9 +38,12 @@ if (!TOKEN) {
 
 const DEFAULT_CONFIG_PATH = path.join(__dirname, 'default-config.json');
 const FALLBACK_CONFIG = { urls: [], rotationIntervalSeconds: 300, schedule: [], coffeeBreakMinutes: 15 };
-const initialConfig = fs.existsSync(DEFAULT_CONFIG_PATH)
+const hasDefaultConfig = fs.existsSync(DEFAULT_CONFIG_PATH);
+const initialConfig = hasDefaultConfig
   ? { ...FALLBACK_CONFIG, ...JSON.parse(fs.readFileSync(DEFAULT_CONFIG_PATH, 'utf8')) }
   : FALLBACK_CONFIG;
+console.log(`[startup] default-config.json ${hasDefaultConfig ? 'loaded' : 'NOT FOUND'} from ${DEFAULT_CONFIG_PATH}`);
+console.log(`[startup] initial urls: ${initialConfig.urls.length}, schedule entries: ${initialConfig.schedule.length}`);
 
 const state = {
   config: initialConfig,

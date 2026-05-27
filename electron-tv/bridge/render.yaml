@@ -1,9 +1,10 @@
 services:
   - type: web
     name: tv-bridge
-    runtime: docker
+    runtime: node
     rootDir: electron-tv/bridge
-    dockerfilePath: ./Dockerfile
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
     plan: free
     region: frankfurt
     healthCheckPath: /health
