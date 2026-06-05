@@ -116,8 +116,8 @@ function render() {
 }
 
 function startRotation() {
-  stopRotation();
-  const interval = (state.config.rotationIntervalSeconds || 300) * 1000;
+  if (rotationTimer) return; // already running — don't reset the countdown on every render()
+  const interval = (state.config.rotationIntervalSeconds || 60) * 1000;
   rotationTimer = setInterval(() => {
     const urls = state.config.urls || [];
     if (!urls.length) return;
@@ -145,12 +145,14 @@ function applyServerMessage(msg) {
     case 'state_snapshot':
       state = msg.state;
       currentIdx = 0;
+      stopRotation(); // rebuild timer with the new interval
       armCoffeeAutoOff();
       render();
       break;
     case 'set_config':
       state.config = { ...state.config, ...msg.payload };
       currentIdx = 0;
+      stopRotation(); // rebuild timer with the (possibly new) interval
       render();
       break;
     case 'force_url':
@@ -170,6 +172,7 @@ function applyServerMessage(msg) {
       const urls = state.config.urls || [];
       if (urls.length) {
         currentIdx = (currentIdx + 1) % urls.length;
+        stopRotation(); // give the skipped-to page a full interval
         render();
       }
       break;
