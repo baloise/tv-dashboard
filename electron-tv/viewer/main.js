@@ -21,7 +21,7 @@ let ws = null;
 let reconnectMs = 1000;
 
 let state = {
-  config: { urls: [], rotationIntervalSeconds: 300, schedule: [], coffeeBreakMinutes: 15 },
+  config: { urls: [], rotationIntervalSeconds: 60, schedule: [], coffeeBreakMinutes: 15 },
   forceUrl: null,
   coffeeBreak: false,
 };

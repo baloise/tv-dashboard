@@ -4,7 +4,7 @@
     "https://confluence.baloisenet.com/spaces/AC/pages/3665113558/Depot+Extractor+Metrics+Dashboard+Prod#zoomOnLoad=true&auto-reload=97",
     "https://aicon-devops.prod-euw-ceovr-aicircleincubator.az.baloise.app/ops/dashboard"
   ],
-  "rotationIntervalSeconds": 300,
+  "rotationIntervalSeconds": 60,
   "schedule": [
     {
       "url": "https://baloise.github.io/tv-dashboard/menu.html",
