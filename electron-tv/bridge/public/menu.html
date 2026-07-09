@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Mittagsmenü</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;   /* never show scrollbars */
+  }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #e0e0e0;
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+  h1 {
+    font-size: 2em;
+    color: #fff;
+    font-weight: 300;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .allergen-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px 10px;
+    max-width: 55%;
+    font-size: 0.72em;
+    color: rgba(255,255,255,0.75);
+    flex-shrink: 0;
+  }
+  .allergen-legend .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+  .allergen-legend img {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    padding: 2px;
+    flex-shrink: 0;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+    flex: 1;
+    min-height: 0;   /* allow children to shrink inside flex parent */
+    min-width: 0;
+  }
+  @media (max-width: 900px) {
+    .menu-grid { grid-template-columns: 1fr; grid-template-rows: repeat(4, 1fr); }
+  }
+
+  .category {
+    position: relative;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #222;   /* fallback when no photo */
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+  }
+  .category-photo {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+  /* Card body is a rounded dark pill in the bottom-left — fits content width,
+     doesn't cover the photo. */
+  .card-body {
+    position: absolute;
+    left: 14px; bottom: 14px;
+    max-width: calc(100% - 28px - 60px); /* leave ~60px for the weight column */
+    max-height: calc(100% - 60px);        /* don't overlap the category chip */
+    overflow: hidden;
+    padding: 12px 16px;
+    border-radius: 12px;
+    color: #fff;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    z-index: 1;
+  }
+
+  /* Weight bars live in a separate full-height column on the right edge. */
+  .weight-column {
+    position: absolute;
+    top: 14px; right: 14px; bottom: 14px;
+    display: flex;
+    gap: 6px;
+    z-index: 1;
+  }
+
+  /* Category name pinned as a chip in the TOP-LEFT corner */
+  .category-name {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85em;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 700;
+    z-index: 2;
+  }
+
+  .product {
+    margin-bottom: 10px;
+  }
+  .product:last-child { margin-bottom: 0; }
+
+  .product-name {
+    font-size: 1.1em;
+    color: #fff;
+    font-weight: 700;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.95),
+                 0 1px 2px rgba(0,0,0,0.95);
+  }
+  .product-price {
+    display: inline-block;
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #80e27e;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.95);
+  }
+  .product-meta {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 0.85em;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.95);
+  }
+
+  .weight-bar {
+    position: relative;
+    width: 18px;
+    height: 100%;              /* full card height (minus 28px padding) */
+    background: rgba(0,0,0,0.55);
+    border-radius: 9px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.7);
+    flex-shrink: 0;
+  }
+  .weight-bar-fill {
+    position: absolute; left: 0; right: 0; bottom: 0;  /* grows bottom -> top */
+    background: linear-gradient(to top,
+      rgba(255,255,255,0.35) 0%,
+      rgba(255,255,255,0.60) 50%,
+      rgba(255,255,255,0.85) 100%);
+    border-radius: 9px;
+    transition: height 0.4s ease;
+  }
+  .weight-bar-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);  /* read bottom-to-top */
+    font-size: 0.65em;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.95);
+    letter-spacing: 0.5px;
+    line-height: 1;
+  }
+
+  .allergen-row { display: flex; gap: 3px; margin-top: 5px; flex-wrap: wrap; }
+  .allergen-icon {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    padding: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .sold-out-ribbon {
+    position: absolute;
+    top: 24px; right: -44px;
+    transform: rotate(25deg);
+    background: #e53935;
+    color: #fff;
+    padding: 6px 56px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 0.85em;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  #loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    color: #888;
+    pointer-events: none;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid #333; border-top-color: #6c63ff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #error { color: #f44336; font-size: 1.2em; text-align: center; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="headerLine">Mittagsmenü Nord</h1>
+  <div class="allergen-legend" id="allergenLegend"></div>
+</header>
+<div id="loading"><div class="spinner"></div> Menü wird geladen...</div>
+<div class="menu-grid" id="menuGrid"></div>
+<div id="error"></div>
+
+<script>
+// Qnips / SV-Gastronomie API config
+const QNIPS_API = "https://apps-live-eu.qnips.com/cons/api";
+const QNIPS_AUTH = "000981c0f9391630f993c9c2ecdb8b46f67";
+const FIREBASE_KEY = "AIzaSyDR_h6fX9hBl2I7oy7xjzmYgDxJY2igdls";
+const FIRESTORE_PROJECT = "qnips-sv-group-ch";
+const MENU_ID = "18231"; // Mittagsmenü Nord, Baloise Basel
+const LANG = "de-CH";
+
+// SharePoint photos - Baloise-internal, SSO-gated fallback.
+// Files live at /sites/Verpflegung-Events/SiteAssets/Bilder Menu/<file>.
+const SHAREPOINT_PHOTO_BASE =
+  "https://baloise.sharepoint.com/sites/Verpflegung-Events/_layouts/15/download.aspx" +
+  "?SourceUrl=%2Fsites%2FVerpflegung%2DEvents%2FSiteAssets%2FBilder%20Menu%2F";
+
+// Firebase category name -> SharePoint filename.
+// Ballistro files (daily/kitchen/suppe) are deliberately excluded — South building.
+const CATEGORY_PHOTO_MAP = {
+  "Menu 1":       "vegi.jpg",
+  "Menu 2":       "menu.jpg",
+  "Grill/Wok":    "grill.JPG",
+  "Pizza/Pasta":  "pizza.JPG"
+};
+
+// Firebase category name -> UI label. "Menu 1" in Firebase is the vegi line,
+// "Menu 2" is the regular menu — display the human-friendly names.
+const CATEGORY_DISPLAY_MAP = {
+  "Menu 1": "Vegi",
+  "Menu 2": "Menu"
+};
+
+function photoUrlFor(categoryName) {
+  var f = CATEGORY_PHOTO_MAP[categoryName];
+  return f ? SHAREPOINT_PHOTO_BASE + encodeURIComponent(f) : null;
+}
+
+function imageUrlFromFields(fieldValues) {
+  if (!fieldValues) return null;
+
+  var imageFields = [
+    "PictureUrl",
+    "ImageUrl",
+    "ProductPictureUrl",
+    "PictureURL",
+    "ImageURL",
+    "PhotoUrl"
+  ];
+
+  for (var i = 0; i < imageFields.length; i++) {
+    var url = normalizeImageUrl(getFieldValue(fieldValues[imageFields[i]]));
+    if (url) return url;
+  }
+
+  return null;
+}
+
+function officialPhotoUrlFor(category, products) {
+  var categoryUrl = imageUrlFromFields(category);
+  if (categoryUrl) return categoryUrl;
+
+  for (var i = 0; products && i < products.length; i++) {
+    var prod = products[i].mapValue.fields;
+    var productUrl = imageUrlFromFields(prod);
+    if (productUrl) return productUrl;
+  }
+
+  return null;
+}
+
+function menuPhotoUrlFor(category, categoryName, products) {
+  return officialPhotoUrlFor(category, products) || photoUrlFor(categoryName);
+}
+
+function normalizeImageUrl(url) {
+  if (!url || typeof url !== "string") return "";
+  url = url.trim();
+  if (!url) return "";
+  if (url.indexOf("//") === 0) return "https:" + url;
+  if (url.charAt(0) === "/") return "https://sv-gastronomie.ch" + url;
+  if (/^https?:\/\//i.test(url)) return url;
+  return "";
+}
+
+function displayCategoryName(categoryName) {
+  return CATEGORY_DISPLAY_MAP[categoryName] || categoryName;
+}
+
+async function getFirebaseToken() {
+  // Step 1: Get anonymous identity from Qnips (GET request, not POST)
+  var resp = await fetch(QNIPS_API + "/NewIdentity", {
+    method: "GET",
+    headers: {
+      "App-Brand": "svgroupch",
+      "Response-Version": "v3",
+      "Authorization": QNIPS_AUTH
+    }
+  });
+  if (!resp.ok) throw new Error("Qnips auth failed: " + resp.status);
+  var data = await resp.json();
+  var content = data.Content || data;
+
+  if (!content.FirebaseCustomToken) {
+    throw new Error("No FirebaseCustomToken in response. Keys: " + Object.keys(content).join(", "));
+  }
+
+  // Step 2: Exchange custom token for Firebase ID token
+  var tokenResp = await fetch(
+    "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=" + FIREBASE_KEY,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: content.FirebaseCustomToken, returnSecureToken: true })
+    }
+  );
+  if (!tokenResp.ok) throw new Error("Firebase auth failed: " + tokenResp.status);
+  var tokenData = await tokenResp.json();
+  return tokenData.idToken;
+}
+
+function getISOWeekNumber(date) {
+  var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+async function fetchMenu() {
+  try {
+    var token = await getFirebaseToken();
+    var now = new Date();
+    var year = now.getFullYear();
+    var week = getISOWeekNumber(now);
+    var weekDay = (now.getDay() + 6) % 7; // 0=Monday
+
+    var url = "https://firestore.googleapis.com/v1/projects/" + FIRESTORE_PROJECT +
+      "/databases/(default)/documents/Release/" + LANG + "/Menus/" + MENU_ID +
+      "/Years/" + year + "/Weeks/" + week;
+
+    var resp = await fetch(url, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    if (!resp.ok) throw new Error("Firestore fetch failed: " + resp.status);
+    var doc = await resp.json();
+
+    // Parse Firestore document
+    var fields = doc.fields;
+    if (!fields || !fields.Days) throw new Error("No menu data found");
+
+    var days = fields.Days.arrayValue.values;
+    var today = days[weekDay];
+    if (!today) throw new Error("No menu for today");
+
+    var dayFields = today.mapValue.fields;
+    var categories = dayFields.Categories.arrayValue.values;
+
+    // Allergen lookup: AllergenId -> { icon, name }  (top-level entries only)
+    var allergenLookup = {};
+    var allergens = (fields.Allergens && fields.Allergens.arrayValue.values) || [];
+    for (var i = 0; i < allergens.length; i++) {
+      var af = allergens[i].mapValue.fields;
+      if (af.SubAllergenId) continue; // skip sub-allergens
+      var id = parseInt(getFieldValue(af.AllergenId));
+      var icon = getFieldValue(af.IconUrl);
+      var name = getFieldValue(af.Name) || "";
+      // Strip the "enthält " prefix so the legend reads cleanly ("Gluten" vs "enthält Gluten")
+      name = name.replace(/^enthält\s+/i, "");
+      if (!isNaN(id) && icon) allergenLookup[id] = { icon: icon, name: name };
+    }
+
+    // Max weight across today's products — used to normalise the weight bar
+    var maxWeight = 0;
+    for (var ci = 0; ci < categories.length; ci++) {
+      var prods = (categories[ci].mapValue.fields.Products &&
+                   categories[ci].mapValue.fields.Products.arrayValue.values) || [];
+      for (var pi = 0; pi < prods.length; pi++) {
+        var w = parseFloat(getFieldValue(prods[pi].mapValue.fields.WeightInGrams)) || 0;
+        if (w > maxWeight) maxWeight = w;
+      }
+    }
+
+    document.getElementById("headerLine").textContent = "Mittagsmenü Nord";
+
+    renderMenu(categories, allergenLookup, maxWeight);
+    renderLegend(categories, allergenLookup);
+  } catch (e) {
+    console.error(e);
+    document.getElementById("error").textContent = "Fehler: " + e.message;
+  }
+  document.getElementById("loading").style.display = "none";
+}
+
+function getFieldValue(field) {
+  if (!field) return "";
+  if (field.stringValue !== undefined) return field.stringValue;
+  if (field.integerValue !== undefined) return field.integerValue;
+  if (field.doubleValue !== undefined) return field.doubleValue;
+  if (field.booleanValue !== undefined) return field.booleanValue;
+  return "";
+}
+
+function renderProduct(prod, allergenLookup, maxWeight) {
+  var name = getFieldValue(prod.Name);
+
+  // Internal price only (external dropped per UX feedback)
+  var intPrice = "";
+  if (prod.Prices && prod.Prices.arrayValue && prod.Prices.arrayValue.values) {
+    var prices = prod.Prices.arrayValue.values;
+    for (var k = 0; k < prices.length; k++) {
+      var p = prices[k].mapValue.fields;
+      var tag = getFieldValue(p.Tag) || getFieldValue(p.Label);
+      var amount = getFieldValue(p.Price) || 0;
+      if (tag === "INT" && amount > 0) {
+        intPrice = "CHF " + parseFloat(amount).toFixed(2);
+      }
+    }
+  }
+
+  // Nutrition: kcal
+  var kcal = "";
+  if (prod.NutritionFacts && prod.NutritionFacts.mapValue &&
+      prod.NutritionFacts.mapValue.fields.KCalPerServing) {
+    kcal = getFieldValue(prod.NutritionFacts.mapValue.fields.KCalPerServing);
+  }
+
+  // Vertical weight bar — heaviest of the day = 100%, others scaled (grows bottom -> top)
+  var weightHtml = "";
+  var weightRaw = getFieldValue(prod.WeightInGrams);
+  if (weightRaw && maxWeight > 0) {
+    var grams = Math.round(parseFloat(weightRaw));
+    if (grams > 0) {
+      var pct = Math.max(8, (grams / maxWeight) * 100); // floor 8% so tiny dishes stay readable
+      weightHtml =
+        '<div class="weight-bar" title="' + grams + ' g">' +
+          '<div class="weight-bar-fill" style="height:' + pct.toFixed(1) + '%"></div>' +
+          '<div class="weight-bar-label">' + grams + ' g</div>' +
+        '</div>';
+    }
+  }
+
+  // Allergen icons
+  var allergenHtml = "";
+  if (prod.Allergens && prod.Allergens.arrayValue && prod.Allergens.arrayValue.values) {
+    var icons = [];
+    var pa = prod.Allergens.arrayValue.values;
+    for (var ai = 0; ai < pa.length; ai++) {
+      var aid = parseInt(getFieldValue(pa[ai]));
+      var entry = allergenLookup[aid];
+      if (entry) {
+        icons.push('<img class="allergen-icon" src="' + entry.icon +
+                   '" alt="' + escapeHtml(entry.name) +
+                   '" title="' + escapeHtml(entry.name) + '">');
+      }
+    }
+    if (icons.length) allergenHtml = '<div class="allergen-row">' + icons.join('') + '</div>';
+  }
+
+  var info = '<div class="product">';
+  info += '<div class="product-name">' + escapeHtml(name) + '</div>';
+  // Price + kcal on one compact line
+  if (intPrice || kcal) {
+    info += '<div>';
+    if (intPrice) info += '<span class="product-price">' + intPrice + '</span>';
+    if (kcal)     info += '<span class="product-meta">' + kcal + ' kcal</span>';
+    info += '</div>';
+  }
+  info += allergenHtml;
+  info += '</div>';
+
+  return { info: info, weight: weightHtml };
+}
+
+function renderMenu(categories, allergenLookup, maxWeight) {
+  var grid = document.getElementById("menuGrid");
+  grid.innerHTML = "";
+
+  for (var i = 0; i < categories.length; i++) {
+    var cat = categories[i].mapValue.fields;
+    var catName = getFieldValue(cat.Name);
+    var products = cat.Products ? cat.Products.arrayValue.values : [];
+
+    if (!products || products.length === 0) continue;
+
+    var card = document.createElement("div");
+    card.className = "category";
+
+    // Background photo (absolute-positioned, onerror removes the element)
+    var photoUrl = menuPhotoUrlFor(cat, catName, products);
+    var cardHtml = "";
+    if (photoUrl) {
+      cardHtml += '<img class="category-photo" src="' + escapeHtml(photoUrl) +
+                  '" alt="" onerror="this.remove()">';
+    }
+
+    // Category chip (absolute top-left, outside the bottom body)
+    cardHtml += '<div class="category-name">' + escapeHtml(displayCategoryName(catName)) + '</div>';
+
+    // Split each product into info (left pill) + weight bar (right column)
+    var infoHtml = '', weightsHtml = '';
+    var anySoldOut = false;
+    for (var j = 0; j < products.length; j++) {
+      var prod = products[j].mapValue.fields;
+      if (prod.IsSoldOut && prod.IsSoldOut.booleanValue) anySoldOut = true;
+      var parts = renderProduct(prod, allergenLookup, maxWeight);
+      infoHtml += parts.info;
+      weightsHtml += parts.weight;
+    }
+
+    if (weightsHtml) {
+      cardHtml += '<div class="weight-column">' + weightsHtml + '</div>';
+    }
+    cardHtml += '<div class="card-body">' + infoHtml + '</div>';
+
+    if (anySoldOut) {
+      cardHtml += '<div class="sold-out-ribbon">AUSVERKAUFT</div>';
+    }
+
+    card.innerHTML = cardHtml;
+    grid.appendChild(card);
+  }
+}
+
+function renderLegend(categories, allergenLookup) {
+  // Collect unique allergen IDs that actually appear on today's products
+  var seen = {};
+  for (var i = 0; i < categories.length; i++) {
+    var prods = (categories[i].mapValue.fields.Products &&
+                 categories[i].mapValue.fields.Products.arrayValue.values) || [];
+    for (var j = 0; j < prods.length; j++) {
+      var pa = (prods[j].mapValue.fields.Allergens &&
+                prods[j].mapValue.fields.Allergens.arrayValue.values) || [];
+      for (var k = 0; k < pa.length; k++) {
+        var aid = parseInt(getFieldValue(pa[k]));
+        if (!isNaN(aid) && allergenLookup[aid]) seen[aid] = true;
+      }
+    }
+  }
+
+  var ids = Object.keys(seen).map(Number).sort(function(a,b){ return a - b; });
+  var html = ids.map(function(id) {
+    var e = allergenLookup[id];
+    return '<span class="chip"><img src="' + e.icon + '" alt="">' +
+           escapeHtml(e.name) + '</span>';
+  }).join('');
+  document.getElementById("allergenLegend").innerHTML = html;
+}
+
+function escapeHtml(str) {
+  var div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+fetchMenu();
+</script>
+</body>
+</html>

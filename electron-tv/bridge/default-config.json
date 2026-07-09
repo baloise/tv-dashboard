@@ -7,7 +7,7 @@
   "rotationIntervalSeconds": 60,
   "schedule": [
     {
-      "url": "https://baloise.github.io/tv-dashboard/menu.html",
+      "url": "https://tv-dashboard-xo1a.onrender.com/menu.html",
       "startTime": "11:00",
       "endTime": "12:00"
     }
