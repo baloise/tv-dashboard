@@ -260,9 +260,8 @@ const FIRESTORE_PROJECT = "qnips-sv-group-ch";
 const MENU_ID = "18231"; // Mittagsmenü Nord, Baloise Basel
 const LANG = "de-CH";
 
-// SharePoint photos — Baloise-internal, SSO-gated.
-// Files live at /sites/Verpflegung-Events/SiteAssets/Bilder Menu/<file>
-// and are overwritten daily by SV-Gastronomie.
+// SharePoint photos - Baloise-internal, SSO-gated fallback.
+// Files live at /sites/Verpflegung-Events/SiteAssets/Bilder Menu/<file>.
 const SHAREPOINT_PHOTO_BASE =
   "https://baloise.sharepoint.com/sites/Verpflegung-Events/_layouts/15/download.aspx" +
   "?SourceUrl=%2Fsites%2FVerpflegung%2DEvents%2FSiteAssets%2FBilder%20Menu%2F";
@@ -286,6 +285,53 @@ const CATEGORY_DISPLAY_MAP = {
 function photoUrlFor(categoryName) {
   var f = CATEGORY_PHOTO_MAP[categoryName];
   return f ? SHAREPOINT_PHOTO_BASE + encodeURIComponent(f) : null;
+}
+
+function imageUrlFromFields(fieldValues) {
+  if (!fieldValues) return null;
+
+  var imageFields = [
+    "PictureUrl",
+    "ImageUrl",
+    "ProductPictureUrl",
+    "PictureURL",
+    "ImageURL",
+    "PhotoUrl"
+  ];
+
+  for (var i = 0; i < imageFields.length; i++) {
+    var url = normalizeImageUrl(getFieldValue(fieldValues[imageFields[i]]));
+    if (url) return url;
+  }
+
+  return null;
+}
+
+function officialPhotoUrlFor(category, products) {
+  var categoryUrl = imageUrlFromFields(category);
+  if (categoryUrl) return categoryUrl;
+
+  for (var i = 0; products && i < products.length; i++) {
+    var prod = products[i].mapValue.fields;
+    var productUrl = imageUrlFromFields(prod);
+    if (productUrl) return productUrl;
+  }
+
+  return null;
+}
+
+function menuPhotoUrlFor(category, categoryName, products) {
+  return officialPhotoUrlFor(category, products) || photoUrlFor(categoryName);
+}
+
+function normalizeImageUrl(url) {
+  if (!url || typeof url !== "string") return "";
+  url = url.trim();
+  if (!url) return "";
+  if (url.indexOf("//") === 0) return "https:" + url;
+  if (url.charAt(0) === "/") return "https://sv-gastronomie.ch" + url;
+  if (/^https?:\/\//i.test(url)) return url;
+  return "";
 }
 
 function displayCategoryName(categoryName) {
@@ -491,10 +537,10 @@ function renderMenu(categories, allergenLookup, maxWeight) {
     card.className = "category";
 
     // Background photo (absolute-positioned, onerror removes the element)
-    var photoUrl = photoUrlFor(catName);
+    var photoUrl = menuPhotoUrlFor(cat, catName, products);
     var cardHtml = "";
     if (photoUrl) {
-      cardHtml += '<img class="category-photo" src="' + photoUrl +
+      cardHtml += '<img class="category-photo" src="' + escapeHtml(photoUrl) +
                   '" alt="" onerror="this.remove()">';
     }
 
