@@ -260,32 +260,12 @@ const FIRESTORE_PROJECT = "qnips-sv-group-ch";
 const MENU_ID = "18231"; // Mittagsmenü Nord, Baloise Basel
 const LANG = "de-CH";
 
-// SharePoint photos - Baloise-internal, SSO-gated fallback.
-// Files live at /sites/Verpflegung-Events/SiteAssets/Bilder Menu/<file>.
-const SHAREPOINT_PHOTO_BASE =
-  "https://baloise.sharepoint.com/sites/Verpflegung-Events/_layouts/15/download.aspx" +
-  "?SourceUrl=%2Fsites%2FVerpflegung%2DEvents%2FSiteAssets%2FBilder%20Menu%2F";
-
-// Firebase category name -> SharePoint filename.
-// Ballistro files (daily/kitchen/suppe) are deliberately excluded — South building.
-const CATEGORY_PHOTO_MAP = {
-  "Menu 1":       "vegi.jpg",
-  "Menu 2":       "menu.jpg",
-  "Grill/Wok":    "grill.JPG",
-  "Pizza/Pasta":  "pizza.JPG"
-};
-
 // Firebase category name -> UI label. "Menu 1" in Firebase is the vegi line,
 // "Menu 2" is the regular menu — display the human-friendly names.
 const CATEGORY_DISPLAY_MAP = {
   "Menu 1": "Vegi",
   "Menu 2": "Menu"
 };
-
-function photoUrlFor(categoryName) {
-  var f = CATEGORY_PHOTO_MAP[categoryName];
-  return f ? SHAREPOINT_PHOTO_BASE + encodeURIComponent(f) : null;
-}
 
 function imageUrlFromFields(fieldValues) {
   if (!fieldValues) return null;
@@ -307,7 +287,7 @@ function imageUrlFromFields(fieldValues) {
   return null;
 }
 
-function officialPhotoUrlFor(category, products) {
+function menuPhotoUrlFor(category, products) {
   var categoryUrl = imageUrlFromFields(category);
   if (categoryUrl) return categoryUrl;
 
@@ -318,10 +298,6 @@ function officialPhotoUrlFor(category, products) {
   }
 
   return null;
-}
-
-function menuPhotoUrlFor(category, categoryName, products) {
-  return officialPhotoUrlFor(category, products) || photoUrlFor(categoryName);
 }
 
 function normalizeImageUrl(url) {
@@ -537,7 +513,7 @@ function renderMenu(categories, allergenLookup, maxWeight) {
     card.className = "category";
 
     // Background photo (absolute-positioned, onerror removes the element)
-    var photoUrl = menuPhotoUrlFor(cat, catName, products);
+    var photoUrl = menuPhotoUrlFor(cat, products);
     var cardHtml = "";
     if (photoUrl) {
       cardHtml += '<img class="category-photo" src="' + escapeHtml(photoUrl) +
