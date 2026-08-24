@@ -1,6 +1,6 @@
 {
   "defaultUrls": [
-    "https://concierge.baloise.app/depot/metrics-dashboard.html?auto-reload=97",
+    "https://depot-extractor.prod-euw-ceovr-aicircleincubator.az.baloise.app/depot/metrics-dashboard.html?auto-reload=97",
     "https://aicon-devops.prod-euw-ceovr-aicircleincubator.az.baloise.app/ops/dashboard"
   ],
   "rotationIntervalSeconds": 60,
