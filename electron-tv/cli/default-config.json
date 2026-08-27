@@ -1,8 +1,7 @@
 {
   "urls": [
     "https://aicon-mandator.prod-euw-ceovr-aicircleincubator.az.baloise.app/ops",
-    "https://concierge.baloise.app/depot/metrics-dashboard.html?auto-reload=97",
-    "https://aicon-devops.prod-euw-ceovr-aicircleincubator.az.baloise.app/ops/dashboard"
+    "https://concierge.baloise.app/depot/metrics-dashboard.html?auto-reload=97"
   ],
   "rotationIntervalSeconds": 60,
   "schedule": [
