@@ -1,7 +1,8 @@
 {
   "urls": [
     "https://aicon-mandator.prod-euw-ceovr-aicircleincubator.az.baloise.app/ops",
-    "https://depot-extractor.prod-euw-ceovr-aicircleincubator.az.baloise.app/depot/metrics-dashboard.html?auto-reload=97"
+    "https://depot-extractor.prod-euw-ceovr-aicircleincubator.az.baloise.app/depot/metrics-dashboard.html?auto-reload=97",
+    "https://baloise.github.io/aicon-ccmon/"
   ],
   "rotationIntervalSeconds": 60,
   "schedule": [
