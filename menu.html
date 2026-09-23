@@ -28,6 +28,13 @@
     flex-shrink: 0;
     min-width: 0;
   }
+  h1 #updatedAt {
+    font-size: 0.45em;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+    margin-left: 12px;
+    vertical-align: middle;
+  }
   h1 {
     font-size: 2em;
     color: #fff;
@@ -244,7 +251,7 @@
 <body>
 
 <header>
-  <h1 id="headerLine">Mittagsmenü Nord</h1>
+  <h1 id="headerLine">Mittagsmenü Nord <span id="updatedAt"></span></h1>
   <div class="allergen-legend" id="allergenLegend"></div>
 </header>
 <div id="loading"><div class="spinner"></div> Menü wird geladen...</div>
@@ -267,46 +274,21 @@ const CATEGORY_DISPLAY_MAP = {
   "Menu 2": "Menu"
 };
 
-function imageUrlFromFields(fieldValues) {
-  if (!fieldValues) return null;
+function productPhotoUrl(prod) {
+  // qnips puts the kitchen's daily photo in PictureUrl (== CoverUrls[0]).
+  var url = getFieldValue(prod.PictureUrl);
+  if (!url && prod.CoverUrls && prod.CoverUrls.arrayValue && prod.CoverUrls.arrayValue.values &&
+      prod.CoverUrls.arrayValue.values.length) {
+    url = getFieldValue(prod.CoverUrls.arrayValue.values[0]);
+  }
+  return /^https?:\/\//i.test(url) ? url : "";
+}
 
-  var imageFields = [
-    "PictureUrl",
-    "ImageUrl",
-    "ProductPictureUrl",
-    "PictureURL",
-    "ImageURL",
-    "PhotoUrl"
-  ];
-
-  for (var i = 0; i < imageFields.length; i++) {
-    var url = normalizeImageUrl(getFieldValue(fieldValues[imageFields[i]]));
+function menuPhotoUrlFor(products) {
+  for (var i = 0; products && i < products.length; i++) {
+    var url = productPhotoUrl(products[i].mapValue.fields);
     if (url) return url;
   }
-
-  return null;
-}
-
-function menuPhotoUrlFor(category, products) {
-  var categoryUrl = imageUrlFromFields(category);
-  if (categoryUrl) return categoryUrl;
-
-  for (var i = 0; products && i < products.length; i++) {
-    var prod = products[i].mapValue.fields;
-    var productUrl = imageUrlFromFields(prod);
-    if (productUrl) return productUrl;
-  }
-
-  return null;
-}
-
-function normalizeImageUrl(url) {
-  if (!url || typeof url !== "string") return "";
-  url = url.trim();
-  if (!url) return "";
-  if (url.indexOf("//") === 0) return "https:" + url;
-  if (url.charAt(0) === "/") return "https://sv-gastronomie.ch" + url;
-  if (/^https?:\/\//i.test(url)) return url;
   return "";
 }
 
@@ -351,6 +333,19 @@ function getISOWeekNumber(date) {
   d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
   var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+// Refresh cadence: reload every 10 min; on failure keep the last good board and
+// retry with backoff (30 s, 60 s, 5 min) instead of showing a permanent error.
+var REFRESH_MS = 10 * 60 * 1000;
+var RETRY_MS = [30 * 1000, 60 * 1000, 5 * 60 * 1000];
+var failures = 0;
+var refreshTimer = null;
+var hasRendered = false;
+
+function scheduleRefresh(delayMs) {
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(fetchMenu, delayMs);
 }
 
 async function fetchMenu() {
@@ -407,13 +402,21 @@ async function fetchMenu() {
       }
     }
 
-    document.getElementById("headerLine").textContent = "Mittagsmenü Nord";
-
     renderMenu(categories, allergenLookup, maxWeight);
     renderLegend(categories, allergenLookup);
+    document.getElementById("updatedAt").textContent =
+      "Stand " + now.toLocaleTimeString("de-CH", { hour: "2-digit", minute: "2-digit" });
+    document.getElementById("error").textContent = "";
+    hasRendered = true;
+    failures = 0;
+    scheduleRefresh(REFRESH_MS);
   } catch (e) {
     console.error(e);
-    document.getElementById("error").textContent = "Fehler: " + e.message;
+    // Only replace the board with an error if we never managed to render one.
+    if (!hasRendered) document.getElementById("error").textContent = "Fehler: " + e.message;
+    var delay = RETRY_MS[Math.min(failures, RETRY_MS.length - 1)];
+    failures++;
+    scheduleRefresh(delay);
   }
   document.getElementById("loading").style.display = "none";
 }
@@ -513,7 +516,7 @@ function renderMenu(categories, allergenLookup, maxWeight) {
     card.className = "category";
 
     // Background photo (absolute-positioned, onerror removes the element)
-    var photoUrl = menuPhotoUrlFor(cat, products);
+    var photoUrl = menuPhotoUrlFor(products);
     var cardHtml = "";
     if (photoUrl) {
       cardHtml += '<img class="category-photo" src="' + escapeHtml(photoUrl) +

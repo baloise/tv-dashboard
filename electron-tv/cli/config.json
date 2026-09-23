@@ -2,7 +2,7 @@
   "bridgeUrl": "https://tv-dashboard-xo1a.onrender.com",
   "token": "d8ee565753eb97966aae5f82bd2c0e59183e9e61e58f27752f7784079fb3d9ef",
   "presets": {
-    "menu":     "https://tv-dashboard-xo1a.onrender.com/menu.html",
+    "menu":     "https://catproxy.culmat.workers.dev/https://baloise.github.io/tv-dashboard/menu.html",
     "depot":    "https://concierge.baloise.app/depot/metrics-dashboard.html?auto-reload=97",
     "mandator": "https://aicon-mandator.prod-euw-ceovr-aicircleincubator.az.baloise.app/ops",
     "claude":   "https://baloise.github.io/aicon-ccmon/"

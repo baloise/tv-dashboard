@@ -6,7 +6,7 @@
   "rotationIntervalSeconds": 60,
   "schedule": [
     {
-      "url": "https://tv-dashboard-xo1a.onrender.com/menu.html",
+      "url": "https://catproxy.culmat.workers.dev/https://baloise.github.io/tv-dashboard/menu.html",
       "startTime": "11:00",
       "endTime": "12:00"
     }
